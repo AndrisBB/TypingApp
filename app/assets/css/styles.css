@@ -1,0 +1,13 @@
+div
+{
+    height:160px;
+    background:rgb(193,213,251);
+
+    text-align: center;
+    line-height: 160px;
+}
+
+span
+{
+    font-size: 72px;
+}
