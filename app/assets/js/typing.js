@@ -1,121 +1,155 @@
-const MAX_FRAGMENTS = 32;
+const electron = require('electron');
+const ipc = electron.ipcRenderer;
 
-var fragments_list = [];
+const MAX_FRAGMENTS_LENGTH = 16;
+
+var text = [];
+
+var words_list = [];
 var fragment_count = 0;
+var current_fragment = null;
 var cursor = 0;
 
-function print_fragments()
+function clear_fragments()
 {
-    console.log("print_fragments() .... ");
-    for(var i = 0; i < fragments_list.length; i++)
-    {
-        console.log(fragments_list[i]);
-    }
-}
-
-function update_fragments(text)
-{
-    fragments_list.length = 0;
-    for(var i = 0; i < MAX_FRAGMENTS, i < text.length; i++)
-    {
-        //console.log("tick");
-        var fragment = document.createElement("span");
-        fragment.textContent = text[i];
-        fragments_list.push(fragment);
-    }
-
-    //print_fragments();
-}
-
-function display_fragments()
-{
-    var fragments_div = document.getElementById("fragments_div");
+    let fragments_div = document.getElementById("fragments_div");
     while(fragments_div.firstChild)
     {
-        //console.log("remove child span");
         fragments_div.removeChild(fragments_div.firstChild);
     }
+    fragment_count = 0;
+    current_fragment = null;
+    cursor = 0;
+}
 
-    for(var i = 0; i < fragments_list.length; i++)
+function add_fragment(text)
+{
+    let fragments_div = document.getElementById("fragments_div");
+    for(let i = 0; i < text.length; i++)
     {
-        fragments_div.appendChild(fragments_list[i]);
+        let fragment = document.createElement("span");
+        fragment.textContent = text[i];
+        fragments_div.appendChild(fragment);
+        console.log("add_fragment() : Fragment added ... " + text[i]);
     }
+}
+
+function add_fragments()
+{
+    // Add new fragments
+    let space_left = MAX_FRAGMENTS_LENGTH;
+    while(space_left > 0)
+    {
+        console.log("add_fragments() : Spaces left ... " + space_left);
+        console.log("add_fragments() : Check next word ... " + words_list[0]);
+        if(words_list[0].length < space_left)
+        {
+            console.log("add_fragments() : Word will fit ...");
+            if(space_left != MAX_FRAGMENTS_LENGTH)
+            {
+                add_fragment(" ");
+                space_left--;
+            }
+
+            add_fragment(words_list[0]);
+            space_left = space_left - words_list[0].length;
+            words_list.splice(0, 1);
+        }
+        else
+        {
+            console.log("add_fragments() : Not enaught room for word ...");
+            break;
+        }
+    }
+    fragment_count = MAX_FRAGMENTS_LENGTH - space_left;
+    console.log("add_fragments() : Fragments count ... " + fragment_count);
+    current_fragment = document.getElementById("fragments_div").firstChild.innerText;
+    select_fragment(cursor);
 }
 
 function select_fragment(index)
 {
-    if(index < fragments_list.length)
+    var fragment = document.getElementById("fragments_div").childNodes[index];
+    if(fragment != null)
     {
-        var fragment = fragments_list[index];
-        if(fragment != null)
-        {
-            fragment.style.fontSize = "96px";
-            fragment.style.color = "red";
-            fragment.style.textDecoration = "underline";
-        }
+        fragment.style.fontSize = "96px";
+        fragment.style.color = "red";
+        fragment.style.textDecoration = "underline";
+        current_fragment = fragment.innerText;
+
+        ipc.send("cmd_pulse", current_fragment);
     }
 }
 
 function unselect_fragment(index)
 {
-    if(index < fragments_list.length)
+    var fragment = document.getElementById("fragments_div").childNodes[index];
+    if(fragment != null)
     {
-        var fragment = fragments_list[index];
-        if(fragment != null)
-        {
-            fragment.style.fontSize = "72px";
-            fragment.style.color = "black";
-            fragment.style.textDecoration = "none";
-        }
+        fragment.style.fontSize = "72px";
+        fragment.style.color = "black";
+        fragment.style.textDecoration = "none";
     }
 }
 
 function move_cursor()
 {
+    console.log("move_cursor() : Cursor val ... " + cursor);
     unselect_fragment(cursor);
     cursor++;
-    select_fragment(cursor);
+
+    if(cursor == fragment_count)
+    {
+        console.log("move_cursor() : End of line ... ");
+        clear_fragments();
+        add_fragments();
+    }
+    else
+    {
+        select_fragment(cursor);
+    }
 }
 
-function handle_keypress(event)
+function keypress_handler(event)
 {
     var key = event.keyCode || event.which;
+    var keychar = String.fromCharCode(key);
 
-    console.log("keypress ...." + key);
-    move_cursor();
+    console.log("keypress_handler() : Fragmen val ... " + current_fragment.valueOf());
+    console.log("keypress_handler() : Key pressed ... " + keychar.valueOf());
+
+    if(keychar.valueOf() == current_fragment.valueOf())
+    {
+        console.log("HIT ...");
+        move_cursor();
+    }
+}
+
+function reset()
+{
+    var input_text = document.getElementById("text_area").value;
+    if(input_text.length == 0)
+    {
+        console.log("WARNING: TextArea is empty");
+        return;
+    }
+
+    words_list = input_text.split(' ');
+    console.log(words_list);
+
+    clear_fragments();
+    add_fragments();
 }
 
 (function start()
 {
-    console.log("Typing.js start() ....");
 
-    var text = "sample text";
 
-    update_fragments(text);
-    display_fragments();
-    select_fragment(cursor);
-    //init_fragments();
-    //set_fragments(text);
+    reset();
 
-    //var len = text.length;
-    //for (var i = 0; i < len; i++)
-    //{
-    //    console.log("Tick");
-    //    var fragment = document.createElement("span");
-    //    var character = document.createTextNode(text[i]);
-    //    fragment.appendChild(character);
-    //    fragments_div.appendChild(fragment);
+    //update_fragments(line);
+    //display_fragments();
+    //select_fragment(cursor);
 
-    //    frags_array.push(fragment);
-    //}
-
-    //var frags = document.querySelector("#fragments_div").childNodes;
-    //console.log(frags[1]);
-    //frags[1].style.fontSize = "48px";
-    //frags[1].style.color = "red";
-
-    //console.log(frags_array[1]);
-    //frags_array[1].style.fontSize = "48px";
-    //frags_array[1].style.color = "red";
-    var body = document.body.addEventListener("keypress", handle_keypress);
+    var body = document.body.addEventListener("keypress", keypress_handler);
 })();

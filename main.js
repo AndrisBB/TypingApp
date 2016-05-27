@@ -1,31 +1,55 @@
-const electron = require('electron')
+const electron = require('electron');
 // Module to control application life.
-const app = electron.app
+const app = electron.app;
 // Module to create native browser window.
-const BrowserWindow = electron.BrowserWindow
+const BrowserWindow = electron.BrowserWindow;
+
+const ipc = electron.ipcMain;
+
+
+//var SerialPort = require("serialport");
+//var port = new SerialPort("/dev/ttyUSB0", {
+//  baudrate: 9600
+//});
+
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow
 
 function createWindow () {
-  // Create the browser window.
-  mainWindow = new BrowserWindow({width: 800, height: 600})
+    // Create the browser window.
+    mainWindow = new BrowserWindow({width: 1920, height: 1080})
 
-  // and load the index.html of the app.
-  mainWindow.loadURL(`file://${__dirname}/app/index.html`)
+    // and load the index.html of the app.
+    mainWindow.loadURL(`file://${__dirname}/app/index.html`)
 
-  // Open the DevTools.
-  mainWindow.webContents.openDevTools()
+    // Open the DevTools.
+    mainWindow.webContents.openDevTools()
 
-  // Emitted when the window is closed.
-  mainWindow.on('closed', function () {
+    // Emitted when the window is closed.
+    mainWindow.on('closed', function () {
     // Dereference the window object, usually you would store windows
     // in an array if your app supports multi windows, this is the time
     // when you should delete the corresponding element.
     mainWindow = null
-  })
+    })
+
+    //SerialPort.list(function (err, ports) {
+    //    ports.forEach(function(port) {
+    //        console.log(port.comName);
+    //        console.log(port.pnpId);
+    //        console.log(port.manufacturer);
+    //    });
+    //});
 }
+
+function cmd_pulse_handler(event, args)
+{
+    var char = args.charAt(0);
+    console.log(char);
+}
+
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
@@ -48,6 +72,8 @@ app.on('activate', function () {
     createWindow()
   }
 })
+
+ipc.on("cmd_pulse", cmd_pulse_handler);
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
