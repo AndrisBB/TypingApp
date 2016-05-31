@@ -6,12 +6,20 @@ const BrowserWindow = electron.BrowserWindow;
 
 const ipc = electron.ipcMain;
 
+var serialport = require("serialport");
+var port = null;
+// var serialPort = new SerialPort("/dev/ttyUSB0", {
+//   baudrate: 9600
+// });
 
-//var SerialPort = require("serialport");
-//var port = new SerialPort("/dev/ttyUSB0", {
-//  baudrate: 9600
-//});
-
+// serialPort.on("open", function ()
+// {
+//   console.log('open');
+//   serialPort.write("Hello!", function(err, results) {
+//     console.log('err ' + err);
+//     console.log('results ' + results);
+//   });
+// });
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -34,26 +42,29 @@ function createWindow () {
     // when you should delete the corresponding element.
     mainWindow = null
     })
-
-    //SerialPort.list(function (err, ports) {
-    //    ports.forEach(function(port) {
-    //        console.log(port.comName);
-    //        console.log(port.pnpId);
-    //        console.log(port.manufacturer);
-    //    });
-    //});
 }
 
 function cmd_pulse_handler(event, args)
 {
     var char = args.charAt(0);
     console.log(char);
+
+    if(port != null)
+    {
+        port.write(char);
+    }
+    else
+    {
+        event.sender.send("error", "Port is not opened!");
+    }
 }
 
 
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
+// ----------------------------------------------------------------------------
+// EVENT HANDLERS
+// ----------------------------------------------------------------------------
+
+// Electron loaded event
 app.on('ready', createWindow)
 
 // Quit when all windows are closed.
@@ -75,5 +86,67 @@ app.on('activate', function () {
 
 ipc.on("cmd_pulse", cmd_pulse_handler);
 
+ipc.on("get_port_list", (event, args) => {
+    console.log("IPC: get_port_list");
+    serialport.list(function (err, ports) {
+        if(err)
+        {
+            return;
+        }
+        else
+        {
+            event.sender.send("ports_list", ports);
+        }
+     });
+});
+
+ipc.on("disconnect", (event, args) => {
+    console.log("IPC: disconnect");
+
+    if(port != null)
+    {
+        port.close((error)=>{
+            if(error)
+            {
+                console.log("PORT: Close =>" + error);
+            }
+            else
+            {
+                console.log("PORT: Disconnected");
+                event.sender.send("disconnected");
+                port = null;
+            }
+        });
+    }
+});
+
+
+ipc.on("connect", (event, args) => {
+    console.log("IPC: connect");
+
+    if(port != null)
+    {
+        port.close();
+        port = null;
+    }
+
+    port = new serialport.SerialPort(args, {
+       baudrate: 9600
+    }, false);
+
+    port.on("error", (error) => {
+        console.error("PORT: " + error);
+        event.sender.send("error", "Failed to write to port");
+    });
+
+    port.open((error) => {
+        console.log("SERIAL: port opened " + args );
+        console.log("SERIAL: " + error);
+        event.sender.send("connected");
+    });
+});
+
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
+
+console.log("Electron running ...");

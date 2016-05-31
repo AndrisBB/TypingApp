@@ -1,9 +1,72 @@
+/* ----------------------------------------------------------------------------
+SERIAL PANEL
+-- --------------------------------------------------------------------------*/
+#serial_panel
+{
+    padding-top: 20px;
+}
+
+#port_sel, #baud_sel
+{
+    width: 160px;
+}
+
+#refresh_btn, #open_btn
+{
+    width: 100px;
+}
+
+/* ----------------------------------------------------------------------------
+ALERT PANEL
+-- --------------------------------------------------------------------------*/
+#alert_panel
+{
+    width: 100%;
+    position: fixed;
+    bottom: 0;
+}
+
+
+.ports-panel
+{
+    background: rgb(232,243,248);
+
+}
+
+.ports-panel2
+{
+    background: rgb(150,243,248);
+
+}
+
+
+
+.f-group
+{
+    display: inline;
+}
+
+#port_select
+{
+    width = 200px;
+}
+
+#ports_div
+{
+    height:160px;
+    background:rgb(100,158,56);
+    font-family: 'Share Tech Mono';
+    font-size: 24px;
+}
+
+
 #fragments_div
 {
     height:160px;
     background:rgb(193,213,251);
 
     font-family: 'Share Tech Mono';
+    font-size: 72px;
     text-align: center;
     line-height: 160px;
 }
@@ -13,15 +76,4 @@
     background:rgb(193,144,251);
     text-align: center;
     align-content: center;
-}
-
-#start_btn
-{
-    display: block;
-    float: left;
-}
-
-span
-{
-    font-size: 72px;
 }

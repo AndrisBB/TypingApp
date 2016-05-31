@@ -6,20 +6,94 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Typing</title>
     <link href='https://fonts.googleapis.com/css?family=Share+Tech+Mono' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/css/min/bootmetro.min.css">
     <link rel="stylesheet" href="assets/css/styles.css">
 </head>
-
 <body>
-    <section>
-        <div id="fragments_div">
+    <div class="" id="serial_panel">
+        <div class="row">
+            <div class="span3">
+                <form class="form-inline pull-right" role="form">
+                    <label class="control-label">Port:</label>
+                    <select class="form-control" id="port_sel">
+                    </select>
+                </form>
+            </div>
+            <div class="span3">
+                <form class="form-inline pull-right" role="form">
+                    <label class="control-label" for="baud_sel">Baud:</label>
+                    <select class="form-control" id="baud_sel">
+                        <option ><a class="warning">9600</a></option>
+                    </select>
+                </form>
+            </div>
+            <div class="span3">
+
+                <form class="form-inline pull-right" role="form">
+                    <button type="button" class="btn btn-primary" id="refresh_btn">Refresh</button>
+                    <button type="button" class="btn btn-primary" id="open_btn">Open</button>
+                </form>
+            </div>
         </div>
-        <div id="input_div" class="">
-            <textarea name="name" rows="8" cols="96" id="text_area">morbi true sen et net et malesuada fames ac turpis egestas. Vestibulum tortor quam, feugiat vitae, ultricies eget, tempor sit amet, ante. Donec eu libero sit amet quam egestas semper. Aenean ultricies mi vitae est. Mauris placerat eleifend leo.</textarea>
+    </div>
+    <div class="" id="test_panel">
+        <div class="row-fluid">
+            <div class="span12">
+                <div class="well">
+                    <strong>Test digits</strong>
+                    <div class="row">
+                        <div class="span1 offset1">
+                            <button type="button" class="btn btn-success" id="digit9_btn">DIG 9</button>
+                        </div>
+                        <div class="span1">
+                            <button type="button" class="btn btn-success" id="digit8_btn">DIG 8</button>
+                        </div>
+                        <div class="span1">
+                            <button type="button" class="btn btn-success" id="digit7_btn">DIG 7</button>
+                        </div>
+                        <div class="span1">
+                            <button type="button" class="btn btn-success" id="digit6_btn">DIG 6</button>
+                        </div>
+                        <div class="span1">
+                            <button type="button" class="btn btn-success" id="digit5_btn">DIG 5</button>
+                        </div>
+                        <div class="span1">
+                            <button type="button" class="btn btn-success" id="digit4_btn">DIG 4</button>
+                        </div>
+                        <div class="span1">
+                            <button type="button" class="btn btn-success" id="digit3_btn">DIG 3</button>
+                        </div>
+                        <div class="span1">
+                            <button type="button" class="btn btn-success" id="digit2_btn">DIG 2</button>
+                        </div>
+                        <div class="span1">
+                            <button type="button" class="btn btn-success" id="digit1_btn">DIG 1</button>
+                        </div>
+                        <div class="span1">
+                            <button type="button" class="btn btn-success" id="digit0_btn">DIG 0</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-    </section>
-    <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
-    <script src="assets/bootstrap/js/bootstrap.min.js"></script>
-    <script src="assets/js/typing.js"></script>
+    </div>
+    <div class="" id="stats_panel">
+        <div class="row-fluid">
+            <div class="span8 offset2">
+                <div class="well">
+                    <embed src="assets/img/QWERTY.svg" id="keyboard_svg">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="alert_panel" id="alert_panel">
+        <div class="row-fluid">
+            <div class="span12" id="alert_column">
+            </div>
+        </div>
+    </div>
 </body>
+<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+<script src="assets/bootstrap/js/bootstrap.min.js"></script>
+<script src="assets/js/typing.js"></script>
 </html>
